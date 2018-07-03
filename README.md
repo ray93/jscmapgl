@@ -2,14 +2,6 @@
 
 ## 项目获取
 
-```
-## 外网
-git clone git@gitee.com:jlitrdc/mapComponent.git
-
-## 内网
-git clone ssh://git@192.103.108.210:10022/songqiankun/mapComponent.git
-```
-
 - 修改本地`npm`源
 
 ```
@@ -20,7 +12,7 @@ npm config set registry=http:192.168.9.19:4873
 - 获取`npm`包
 
 ```
-cd mapComponent
+cd jscmapgl
 npm install
 ## 如果在内网获取失败则可能是服务挂了，请联系宋乾坤排查
 ```
