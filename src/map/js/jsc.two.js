@@ -95,6 +95,7 @@ class JscMap {
         if (options.autoAddtoMap) {
             this.map.addLayer(heatLayer);
         }
+        return heatLayer;
     };
 
     addPoiLayer = function addPoiLayer(data, options) {
