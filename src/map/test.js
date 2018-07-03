@@ -15,6 +15,7 @@ var jscMap = new JscMap('app', {
     baseLayerMode: 'street'
 });
 
+
 console.info(jscMap.map);
 
 jscMap.addClusterLayer([

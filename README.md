@@ -12,7 +12,7 @@ npm config set registry=http:192.168.9.19:4873
 - 获取`npm`包
 
 ```
-cd jscmapgl
+cd mapComponent
 npm install
 ## 如果在内网获取失败则可能是服务挂了，请联系宋乾坤排查
 ```
