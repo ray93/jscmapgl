@@ -88,7 +88,6 @@ class JscMap {
             this.map.addLayer(clusterLayer);
         }
         return clusterLayer;
-
     };
 
     addHeatMapLayer = function addHeatMapLayer(data, options) {
@@ -99,13 +98,26 @@ class JscMap {
     };
 
     addPoiLayer = function addPoiLayer(data, options) {
-
+        // [{
+        //     poi: [119.2, 32],
+        //     icon: '#f00'
+        // }]
     };
 
     addPolygonLayer = function addPolygonLayer(data, options) {
-
+        // [{
+        //     polygon: [
+        //         [119.2, 32],
+        //         [119.2, 32],
+        //         [119.2, 32]
+        //     ],
+        //     color: '#f00'
+        // }]
     };
 
+    addNetGrid = function addNetGrid() {
+
+    }
 
 
 }

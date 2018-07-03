@@ -15,8 +15,11 @@ var jscMap = new JscMap('app', {
     baseLayerMode: 'street'
 });
 
-
-console.info(jscMap.map);
+var jscMap2 = new JscMap('app2', {
+    center: [119, 32],
+    zoom: 12,
+    baseLayerMode: 'vector'
+});
 
 jscMap.addClusterLayer([
     [119.2, 32],
