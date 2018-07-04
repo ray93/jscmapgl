@@ -6,6 +6,8 @@ import * as maptalks from '~/maptalks.js';
 window.maptalks = maptalks;
 import JscMap from './js/jsc.two';
 
+import png01 from './img/player.png';
+
 // import echarts from 'echarts'
 // import '~/echarts-gl'
 
@@ -21,7 +23,7 @@ var jscMap2 = new JscMap('app2', {
     baseLayerMode: 'vector'
 });
 var map = jscMap.map;
-var clusterLayer, heatLayer, gridLayer;
+var clusterLayer, heatLayer, gridLayer, poiLayer;
 
 $('#clbtn').click(function () {
     map.clearLayers();
@@ -145,4 +147,36 @@ $('#buildbtn').click(function () {
 
 $('#clearbuildbtn').click(function () {
     jscMap.addBuildings([]);
+});
+
+$('#poibtn').click(function () {
+    map.clearLayers();
+    if (!poiLayer) {
+        poiLayer = jscMap.addPoiLayer(
+            [{
+                poi: [-74, 40.70],
+                id: "poi01",
+                path: png01,
+                width: 50,
+                height: 50
+            }, {
+                poi: [-74.01, 40.70],
+                id: "poi02",
+                isVector: true,
+                width: 50,
+                height: 50
+            }, {
+                poi: [-74.02, 40.70],
+                id: "poi03",
+                path: png01,
+                width: 50,
+                height: 50
+            }], {
+                autoAddtoMap: true
+            });
+
+        map.addEventListener("selectPoi", function (e) {
+            console.log(e.getId());
+        })
+    }
 });
