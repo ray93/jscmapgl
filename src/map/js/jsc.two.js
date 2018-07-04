@@ -9,6 +9,9 @@ import {
     BigPolygonLayer
 } from '../lib/maptalks.biglayer';
 
+import echarts from 'echarts'
+import '~/echarts-gl'
+
 maptalks.Map.prototype.hasLayer = function (layer) {
     for (var i = 0; i < this._layers.length; i++) {
         if (this._layers[i] == layer) {
@@ -32,21 +35,115 @@ maptalks.Map.prototype.clearLayers = function (layer) {
 class JscMap {
     constructor(container, options) {
         if (options.baseLayerMode == 'street') {
-            options.baseLayer = new maptalks.TileLayer('base', {
+            options.baseLayer = {
                 urlTemplate: 'http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}',
                 subdomains: ['a', 'b', 'c', 'd'],
-                attribution: ''
-            });
+            }
+            // new maptalks.TileLayer('base', {
+            //     urlTemplate: 'http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}',
+            //     subdomains: ['a', 'b', 'c', 'd'],
+            // });
         } else if (options.baseLayerMode == 'vector') {
-            options.baseLayer = new maptalks.TileLayer('base', {
-                urlTemplate: 'http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}',
+            options.baseLayer = {
+                urlTemplate: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
                 subdomains: ['a', 'b', 'c', 'd'],
-                attribution: ''
-            });
+            }
+            // new maptalks.TileLayer('base2', {
+            //     urlTemplate: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+            //     subdomains: ['a', 'b', 'c', 'd'],
+            // });
         }
-        this.map = new maptalks.Map(container, options);
+
+        options = Object.assign({
+            pitch: 55,
+            altitudeScale: 2,
+            postEffect: {
+                enable: true,
+                FXAA: {
+                    enable: true
+                }
+            },
+            light: {
+                main: {
+                    intensity: 1,
+                    shadow: true,
+                    shadowQuality: 'high'
+                },
+                ambient: {
+                    intensity: 0.
+                },
+                ambientCubemap: {
+                    texture: '/src/map/data/data-1491838644249-ry33I7YTe.hdr',
+                    exposure: 1,
+                    diffuseIntensity: 0.5,
+                    specularIntensity: 2
+                }
+            }
+        }, options);
+
+        var myChart = echarts.init(document.getElementById(container));
+        echarts.registerMap('buildings', {
+            "features": []
+        });
+
+        myChart.setOption({
+            maptalks: options,
+            series: [{
+                type: 'map3D',
+                coordinateSystem: 'maptalks',
+                map: 'buildings',
+                data: [],
+                shading: 'realistic',
+                silent: true,
+                instancing: true,
+                realisticMaterial: {
+                    metalness: 1,
+                    roughness: 0.2,
+                }
+            }]
+        });
+
+        window.addEventListener('resize', function () {
+            myChart.resize();
+        });
+
+        this.map = myChart.getModel().getComponent('maptalks').getMaptalks();
+        this.myChart = myChart;
     };
 
+    addBuildings = function addBuildings(builds) {
+        echarts.registerMap('buildings', {
+            "features": builds
+        });
+
+        var regionsData = builds.map(function (feature) {
+            return {
+                name: feature.properties.name,
+                value: Math.random() * 1,
+                height: feature.properties.height,
+                itemStyle: {
+                    color: 'red',
+                    borderColor: 'red'
+                }
+            };
+        });
+
+        this.myChart.setOption({
+            series: [{
+                type: 'map3D',
+                coordinateSystem: 'maptalks',
+                map: 'buildings',
+                data: regionsData,
+                shading: 'realistic',
+                silent: true,
+                instancing: true,
+                realisticMaterial: {
+                    metalness: 1,
+                    roughness: 0.2,
+                }
+            }]
+        });
+    };
 
     addClusterLayer = function addClusterLayer(data, options) {
         var markers = [];
@@ -132,7 +229,7 @@ class JscMap {
     };
 
     addPoiLayer = function addPoiLayer(data, options) {
-      
+
     };
 
     addPolygonLayer = function addPolygonLayer(data, options) {
