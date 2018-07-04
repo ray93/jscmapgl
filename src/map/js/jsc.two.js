@@ -9,6 +9,25 @@ import {
     BigPolygonLayer
 } from '../lib/maptalks.biglayer';
 
+maptalks.Map.prototype.hasLayer = function (layer) {
+    for (var i = 0; i < this._layers.length; i++) {
+        if (this._layers[i] == layer) {
+            return true;
+        }
+    }
+    return false;
+}
+
+maptalks.Map.prototype.clearLayers = function (layer) {
+    for (var i = this._layers.length; i > 0; i--) {
+        this.removeLayer(this._layers[i - 1]);
+    }
+}
+
+//map.addLayer();
+//map.removeLayer();
+//map.sortLayers();
+
 
 class JscMap {
     constructor(container, options) {
@@ -27,6 +46,7 @@ class JscMap {
         }
         this.map = new maptalks.Map(container, options);
     };
+
 
     addClusterLayer = function addClusterLayer(data, options) {
         var markers = [];
@@ -91,6 +111,19 @@ class JscMap {
     };
 
     addHeatMapLayer = function addHeatMapLayer(data, options) {
+        options = Object.assign({
+            'max': 1,
+            'radius': 25,
+            'blur': 15,
+            'gradient': {
+                0.4: 'blue',
+                0.6: 'cyan',
+                0.7: 'lime',
+                0.8: 'yellow',
+                1.0: 'red'
+            }
+        }, options);
+
         var heatLayer = new HeatLayer('heat', data, options);
         if (options.autoAddtoMap) {
             this.map.addLayer(heatLayer);
@@ -99,10 +132,7 @@ class JscMap {
     };
 
     addPoiLayer = function addPoiLayer(data, options) {
-        // [{
-        //     poi: [119.2, 32],
-        //     icon: '#f00'
-        // }]
+      
     };
 
     addPolygonLayer = function addPolygonLayer(data, options) {
@@ -116,10 +146,49 @@ class JscMap {
         // }]
     };
 
-    addNetGrid = function addNetGrid() {
+    addNetGrid = function addNetGrid(data, options) {
+        var polygons = [];
+        for (var k = 0; k < data.length; k++) {
+            for (var i = 0; i < data[k].polygons.length; i++) {
+                polygons.push(new maptalks.Polygon(data[k].polygons[i].polygon, {
+                    symbol: {
+                        lineColor: '#34495e',
+                        lineWidth: 2,
+                        polygonFill: data[k].polygons[i].color,
+                        polygonOpacity: 0.6
+                    },
+                    properties: {
+                        'minReso': data[k].minReso,
+                        'maxReso': data[k].maxReso
+                    }
+                }).setInfoWindow({
+                    'title': data[k].polygons[i].title,
+                    'content': data[k].polygons[i].content
+                }));
+            }
+        }
 
+        var gridlayer = new maptalks.VectorLayer('grid').addGeometry(polygons);
+        if (options.autoAddtoMap) {
+            this.map.addLayer(gridlayer);
+        }
+        this.map.addEventListener('viewchange', function (e) {
+            var features = gridlayer.filter(['>=', 'maxReso', e.new.zoom]).filter(['<=', 'minReso', e.new.zoom]);
+            gridlayer.forEach(function (feature) {
+                feature.updateSymbol({
+                    polygonOpacity: 0,
+                    lineOpacity: 0,
+                });
+            });
+            features.forEach(function (feature) {
+                feature.updateSymbol({
+                    polygonOpacity: 0.6,
+                    lineOpacity: 0.6,
+                });
+            });
+        });
+        return gridlayer;
     }
-
 
 }
 
