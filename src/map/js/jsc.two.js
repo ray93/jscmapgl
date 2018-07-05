@@ -234,9 +234,10 @@ class JscMap {
             var a = data[i];
             console.log(a);
 
+            var dataOptions = {};
             var isVector = a.isVector || false;
             if (!isVector) {
-                markers.push(new maptalks.Marker(a.poi, {
+                dataOptions = {
                     id: a.id,
                     symbol: {
                         markerFile: a.path,
@@ -246,12 +247,9 @@ class JscMap {
                         markerDy: 0,
                         markerOpacity: 1
                     }
-                }).addEventListener("mousedown", function (e) {
-                    console.log(e);
-                    this.map.fire('selectPoi', e.target);
-                }, this));
+                }
             } else {
-                markers.push(new maptalks.Marker(a.poi, {
+                dataOptions = {
                     id: a.id,
                     symbol: {
                         markerType: 'ellipse',
@@ -267,23 +265,18 @@ class JscMap {
                         markerDy: 0,
                         markerOpacity: 1
                     }
-                }).addEventListener("mousedown", function (e) {
-                    console.log(e);
-                    this.map.fire('selectPoi', e.target);
-                }, this));
+                }
             }
+            markers.push(new maptalks.Marker(a.poi, dataOptions).addEventListener("mousedown", function (e) {
+                console.log(e);
+                this.map.fire('selectPoi', e.target);
+            }, this));
         }
         var poiLayer = new maptalks.VectorLayer('poi', markers, options);
 
         if (options.autoAddtoMap) {
             this.map.addLayer(poiLayer);
         }
-
-        // [{
-        //     poi: [119.2, 32],
-        //     icon: '#f00',
-        //     path: '6.png'
-        // }]
     };
 
     addPolygonLayer = function addPolygonLayer(data, options) {
